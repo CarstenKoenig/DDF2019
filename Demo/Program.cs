@@ -24,7 +24,17 @@ namespace ParserComb
       }
     }
 
-    private static Parser<double> ExpressionP()
+    static string ToString(IEnumerable<char> chars)
+    {
+      return new String(chars.ToArray());
+    }
+
+    static double Add(double a, double b) => a + b;
+    static double Subtract(double a, double b) => a - b;
+    static double Multiply(double a, double b) => a * b;
+    static double Divide(double a, double b) => a / b;
+
+    static Parser<double> ExpressionP()
     {
       var spacesP =
         Parsers.Char(Char.IsWhiteSpace).Many().Map(_ => Unit.Value);
@@ -33,17 +43,21 @@ namespace ParserComb
         Parsers
           .Char(Char.IsDigit)
           .Many1()
-          .TryMap((IEnumerable<char> chrs, out double output) => Double.TryParse(new String(chrs.ToArray()), out output))
+          .Map(ToString)
+          .TryMap<string, double>(Double.TryParse)
           .LeftOf(spacesP);
 
+      Parser<Func<double, double, double>> OperatorP(char symbol, Func<double, double, double> operation)
+        => Parsers.Char(symbol).Map(_ => operation);
+
       var addOpsP =
-        Parsers.Char('+').Map<Unit, Func<double, double, double>>(_ => ((a, b) => a + b))
-        .Or(Parsers.Char('-').Map<Unit, Func<double, double, double>>(_ => ((a, b) => a - b)))
+        OperatorP('+', Add)
+        .Or(OperatorP('-', Subtract))
         .LeftOf(spacesP);
 
       var multOpsP =
-        Parsers.Char('*').Map<Unit, Func<double, double, double>>(_ => ((a, b) => a * b))
-        .Or(Parsers.Char('/').Map<Unit, Func<double, double, double>>(_ => ((a, b) => a / b)))
+        OperatorP('*', Multiply)
+        .Or(OperatorP('/', Divide))
         .LeftOf(spacesP);
 
       var expressionRef = Parsers.CreateForwardRef<double>();

@@ -1,7 +1,7 @@
 ---
 author: Carsten König
-title: funktionale Parser-Generatoren in C#
-date: 08. April 2018
+title: Parser funktional implementiert mit C#
+date: 06. April 2018
 ---
 
 # Einleitung
