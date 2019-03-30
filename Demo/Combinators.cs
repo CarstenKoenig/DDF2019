@@ -131,10 +131,29 @@ namespace ParserComb.Combinators
     public static Parser<T> ChainLeft1<T>(this Parser<T> operandP, Parser<Func<T, T, T>> operatorP)
     {
       Parser<T> rest(T accum) =>
-        operatorP.AndThen(op => operandP.AndThen(val => rest(op(accum, val))))
+        (from op in operatorP
+         from val in operandP
+         from more in rest(op(accum, val))
+         select more)
         .Or(Succeed(accum));
 
-      return operandP.AndThen(val => rest(val));
+      return operandP.AndThen(rest);
+    }
+
+    public static Parser<TResult> Select<TSource, TResult>(this Parser<TSource> source, Func<TSource, TResult> selector)
+    {
+      return source.Map(selector);
+    }
+
+    public static Parser<TResult> SelectMany<TSource, TCollection, TResult>(
+      this Parser<TSource> source,
+      Func<TSource, Parser<TCollection>> collectionSelector,
+      Func<TSource, TCollection, TResult> resultSelector)
+    {
+      return source
+         .AndThen(val =>
+            collectionSelector(val)
+            .Map(col => resultSelector(val, col)));
     }
   }
 }
