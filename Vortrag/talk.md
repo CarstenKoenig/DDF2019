@@ -26,18 +26,47 @@ Zeugen Jehovas / FP Witz einfügen
 
 # Parser
 
-## Parser *ok*
-
-![](../Images/Parser.png)
-
-
 ## Parser *fail*
 
 ![](../Images/ParserFail.png)
 
+---
+
+### Beispiel
+
+
+```csharp
+Parser<int> P;
+
+P("Hallo")
+``` 
+
+schlägt fehl
+
+## Parser *ok*
+
+![](../Images/Parser.png)
+
+## Parser *ok*
+
+![](../Images/ParserResult.png)
+
+---
+
+### Beispiel
+
+```csharp
+Parser<int> P;
+
+P("42stck")
+``` 
+
+- liefert die Zahl `42`
+- liefert den *Rest* der Eingabe `"stck"`
+
 ## Definition `Parser`
 
-Funktion Input-`String` &rarr; Output-`ParseResult`
+Input-`String` &rarr; Output-`ParseResult`
 
 ```csharp
 delegate ParseResult<T> Parser<T>(string input)
@@ -49,28 +78,6 @@ eine von zwei Möglichkeiten:
 
 - Parser konnte Eingabe *nicht* benutzen
 - Parser hat einen *Teil* der Eingabe benutzt und einen *Ergebniswert* berechnet
-
-## Beipiel
-
-
-```csharp
-Parser<int> P;
-
-P ( "Hallo" )
-``` 
-
-schlägt fehl
-
----
-
-```csharp
-Parser<int> P;
-
-P ( "42!" )
-``` 
-
-- liefert die Zahl `42`
-- liefert den *Rest* der Eingabe `"!"`
 
 ## *SUM*-Typ
 
@@ -178,7 +185,7 @@ False("Hallo", "Welt"); // = "Welt"
 
 ---
 
-### `ParserResult`` / Pattern Matching
+### `ParserResult` / Pattern Matching
 
 ```csharp
 abstract class ParseResult<T> 

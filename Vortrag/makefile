@@ -1,6 +1,6 @@
 output/slides.html: output/reveal.js talk.md
 	mkdir -p output
-	pandoc -t revealjs --from markdown+tex_math_dollars --slide-level=2 -s -o output/slides.html talk.md -V revealjs-url=./reveal.js -V theme=beige --css="../custom.css"
+	pandoc -t revealjs --from markdown+tex_math_dollars --slide-level=2 -s -o output/slides.html talk.md -V revealjs-url=./reveal.js -V theme=sky --css="../custom.css"
 
 output/reveal.js:
 	mkdir -p output

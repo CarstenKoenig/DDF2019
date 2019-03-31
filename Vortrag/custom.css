@@ -3,3 +3,7 @@ img {
     box-shadow: none !important;
     max-height: 460px !important;
 }
+
+.sourceLine {
+    color: black !important;
+}
