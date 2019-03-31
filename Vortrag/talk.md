@@ -17,20 +17,31 @@ Zeugen Jehovas / FP Witz einfügen
 
 ## die Lego-Idee
 
+![pixabay](../Images/Lego.jpg)
+
 ## Funktionen und Komposition
 
-## Typen
-
----
-idee: eher wie ein Puzzle - untypisiert = alle sehen gleich aus
----
+![Komposition](../Images/FunktionKomposition.png)
 
 
-# Hauptteil
+# Parser
 
-# Parsing erklären
+## Parser *ok*
 
-## was ist ein Parser für uns
+![](../Images/Parser.png)
+
+
+## Parser *fail*
+
+![](../Images/ParserFail.png)
+
+## Definition `Parser`
+
+Funktion Input-`String` &rarr; Output-`ParseResult`
+
+```csharp
+delegate ParseResult<T> Parser<T>(string input)
+```
 
 ## `ParserResult`
 
@@ -220,14 +231,6 @@ abstract class ParseResult<T>
 ```
 
 
-## Definition `Parser`
-
-Funktion Input-`String` &rarr; Output-`ParseResult`
-
-```csharp
-delegate ParseResult<T> Parser<T>(string input)
-```
-
 # Atome unseres Universums
 
 ## `Failure`
@@ -309,6 +312,13 @@ Parser<IEnumerable<T>> Many<T>(this Parser<T> parser) {
 
 # Functor *what?*
 
+---
+
+`Map : (f: A->B) -> (P<A> -> P<B>)`
+
+![`Map(ToString, IntParser)`](../Images/ParserFunctor.png)
+
+
 ## `map`
 
 ```csharp
@@ -347,7 +357,15 @@ Parser<TRes> Map<T, TRes>(
 }
 ```
 
+## Funktor Komposition
+
+![](../Images/FunctorComp.png)
+
 # Monad
+
+## `andThen` 
+
+![`P<A> -> (a -> P<B>) -> P<B>`](../Images/ParserBind.png)
 
 ## `andThen`
 
@@ -498,4 +516,47 @@ expressionRef.SetRef(
 
 # andere Beispiele
 
-# Ende
+## Diagrams
+
+![Hilbert Curve](../Images/Hilbert.png)
+
+---
+
+## Diagrams
+
+```haskell
+hilbert 0 = mempty
+hilbert n = hilbert' (n-1) # reflectY <> vrule 1
+         <> hilbert  (n-1) <> hrule 1
+         <> hilbert  (n-1) <> vrule (-1)
+         <> hilbert' (n-1) # reflectX
+  where
+    hilbert' m = hilbert m # rotateBy (1/4)
+```
+
+## ELM - JSON Decoders
+
+```haskell
+type alias Info =
+  { height : Float
+  , age : Int
+  }
+
+infoDecoder : Decoder Info
+infoDecoder =
+  map2 Info
+    (field "height" float)
+    (field "age" int)
+```
+
+## Andere
+
+- Form / Validation
+- Folds / Projections (Eventsourcing)
+
+# Fragen / Antworten?
+
+## Vielen Dank
+
+- **Slides/Demo** [github.com/CarstenKoenig](https://github.com/CarstenKoenig)
+- **Twitter** @CarstenK_Dev
