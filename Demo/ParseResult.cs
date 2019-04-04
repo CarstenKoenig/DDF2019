@@ -20,6 +20,7 @@ namespace ParserComb
         () => ParseResult.Fail<Tres>());
     }
   }
+
   public class SuccessResult<T> : ParseResult<T>
   {
     public SuccessResult(T value, string remainingInput)

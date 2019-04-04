@@ -24,16 +24,6 @@ namespace ParserComb
       }
     }
 
-    static string ToString(IEnumerable<char> chars)
-    {
-      return new String(chars.ToArray());
-    }
-
-    static double Add(double a, double b) => a + b;
-    static double Subtract(double a, double b) => a - b;
-    static double Multiply(double a, double b) => a * b;
-    static double Divide(double a, double b) => a / b;
-
     static Parser<double> ExpressionP()
     {
       var spacesP =
@@ -72,5 +62,13 @@ namespace ParserComb
       expressionRef.SetRef(multExprP.ChainLeft1(addOpsP).RightOf(spacesP));
       return expressionRef.Parser;
     }
+
+    static double Add(double a, double b) => a + b;
+    static double Subtract(double a, double b) => a - b;
+    static double Multiply(double a, double b) => a * b;
+    static double Divide(double a, double b) => a / b;
+
+    static string ToString(IEnumerable<char> chars) => new String(chars.ToArray());
+
   }
 }

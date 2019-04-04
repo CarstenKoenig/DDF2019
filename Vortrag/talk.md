@@ -6,14 +6,22 @@ date: 06. April 2018
 
 # Einleitung
 
-## die Lego-Idee
+##
 
-![pixabay](../Images/Lego.jpg)
+![](../Images/Franken.png)
+
+:::notes
+Notizen
+:::
 
 ## Funktionen und Komposition
 
-![Komposition](../Images/FunktionKomposition.png)
+![](../Images/FunktionKomposition.png)
 
+
+## die Lego-Idee
+
+![](../Images/Lego.jpg)
 
 # Parser
 
@@ -175,6 +183,7 @@ T Eins<T> (Func<T,T> plus1, T zero) => plus1(zero);
 T Zwei<T> (Func<T,T> plus1, T zero) => plus1(plus1(zero));
 
 Zwei (s => "*"+s, ""); // = "**"
+Zwei (n => n+1, 0);    // = 2
 ```
 
 ---
@@ -258,7 +267,7 @@ Parser<T> Fail<T>()
 - *konsumiert* nichts vom Input
 
 ```csharp
-Parser<T> Succeed<T>(T withalue)
+Parser<T> Succeed<T>(T withValue)
 {
   return input => SuccessResult<T>(withValue, input);
 }
@@ -394,14 +403,6 @@ map : (f: A &rarr; B)  &rarr;  (`P<A>`  &rarr;  `P<B>`)
 
 - `p.map(x=>x)` &#8801; `p`
 - `p.map(x=>g(f(x)))` &#8801; `p.map(f).map(g)`
-
----
-
-### Funktor Komposition
-
-![](../Images/FunctorComp.png)
-
----
 
 ### andere "Funktoren"
 
@@ -609,9 +610,11 @@ infoDecoder =
 - Form / Validation
 - Folds / Projections (Eventsourcing)
 
-# Fragen / Antworten?
+#
 
 ## Vielen Dank
 
 - **Slides/Demo** [github.com/CarstenKoenig](https://github.com/CarstenKoenig)
 - **Twitter** @CarstenK_Dev
+
+## Fragen / Antworten?
