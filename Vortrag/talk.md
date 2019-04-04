@@ -1,19 +1,10 @@
 ---
 author: Carsten König
-title: Parser funktional implementiert mit C#
+title: funktionale Parser in C#
 date: 06. April 2018
 ---
 
 # Einleitung
-
-
-:::notes:
-
-OO intereressiert sich nicht für Kompositionen - FP umso mehr
-
-Zeugen Jehovas / FP Witz einfügen
-
-:::
 
 ## die Lego-Idee
 
@@ -26,43 +17,35 @@ Zeugen Jehovas / FP Witz einfügen
 
 # Parser
 
-## Parser *fail*
+## Was ist ein Parser?
 
-![](../Images/ParserFail.png)
-
----
-
-### Beispiel
-
-
-```csharp
-Parser<int> P;
-
-P("Hallo")
-``` 
-
-schlägt fehl
-
-## Parser *ok*
-
-![](../Images/Parser.png)
-
-## Parser *ok*
-
-![](../Images/ParserResult.png)
+ein **Parser** versucht eine *Eingabe* in eine für die Weiterverarbeitung geeignete
+*Ausgabe* umzuwandeln.
 
 ---
 
-### Beispiel
+### 2 * 3 + 4
 
-```csharp
-Parser<int> P;
+![Syntaxbaum](../Images/SyntaxBaum.png)
 
-P("42stck")
-``` 
+## Kombinator
 
-- liefert die Zahl `42`
-- liefert den *Rest* der Eingabe `"stck"`
+![](../Images/LegoSteine.png)
+
+*Funktionen* die *Parser* zu neuen *Parser*n zusammensetzen
+
+---
+
+## Dazu
+
+- *Parser* als **Daten** representieren
+- *Kombinatoren* als **Funktionen** zwischen diesen Daten
+
+---
+
+## Idee
+
+![](../Images/ParserDef.png)
 
 ## Definition `Parser`
 
@@ -76,19 +59,12 @@ delegate ParseResult<T> Parser<T>(string input)
 
 eine von zwei Möglichkeiten:
 
-- Parser konnte Eingabe *nicht* benutzen
-- Parser hat einen *Teil* der Eingabe benutzt und einen *Ergebniswert* berechnet
+- Parser konnte Eingabe **nicht** erkennen
+- Parser hat einen **Teil** der Eingabe erkannt und einen **Ergebniswert** berechnet
 
-## *SUM*-Typ
+## algebraischer Datentyp
 
-:::notes
-- Produkt-Typen kennen wir alle - jeder Record, Tupel
-- Enum ist schon nahe
-:::
-
----
-
-### funktional (F#)
+**F#**
 
 ```fsharp
 
@@ -99,6 +75,8 @@ type ParseResult<'a> =
 ```
 
 ---
+
+**C#**
 
 ```csharp
 abstract class ParseResult<T> { .. }
@@ -119,6 +97,8 @@ class SuccessResult<T> : ParseResult<T>
 
 ### Pattern Matching
 
+**F#**
+
 ```fsharp
 match result with
 | Failure -> ... 
@@ -132,10 +112,10 @@ match result with
 ```csharp
 switch (result)
 {
-   case FailureResult fail:
+   case FailureResult<T> fail:
      ...
      break;
-   case Success success:
+   case SuccessResult<T> success:
      ... success.Value ...
      break;
 }
@@ -171,11 +151,11 @@ boolValue ? thenBranch : elseBranch;
 
 ---
 
-### Beispiel `Bool`
-
-Church-Encoding wäre
+**Church-Encoding**
 
 ```csharp
+delegate T Bool<T>(T thenBranch, T elseBranch);
+
 T True<T>  (T thenBranch, T elseBranch) => thenBranch;
 T False<T> (T thenBranch, T elseBranch) => elseBranch;
 
@@ -185,7 +165,21 @@ False("Hallo", "Welt"); // = "Welt"
 
 ---
 
-### `ParserResult` / Pattern Matching
+### Beispiel Nat
+
+```csharp
+delegate T Nat<T>(Func<T,T> plus1, T zero);
+
+T Null<T> (Func<T,T> plus1, T zero) => zero;
+T Eins<T> (Func<T,T> plus1, T zero) => plus1(zero);
+T Zwei<T> (Func<T,T> plus1, T zero) => plus1(plus1(zero));
+
+Zwei (s => "*"+s, ""); // = "**"
+```
+
+---
+
+### `ParserResult`
 
 ```csharp
 abstract class ParseResult<T> 
@@ -197,6 +191,8 @@ abstract class ParseResult<T>
 ```
 
 ---
+
+### Failure
 
 ```csharp
 class FailureResult<T> : ParseResult<T>
@@ -211,6 +207,8 @@ class FailureResult<T> : ParseResult<T>
 ```
 
 ---
+
+### Success
 
 ```csharp
 class SuccessResult<T> : ParseResult<T>
@@ -229,6 +227,8 @@ class SuccessResult<T> : ParseResult<T>
 
 ---
 
+### Anwendung
+
 ```csharp
 abstract class ParseResult<T>
 {
@@ -238,20 +238,20 @@ abstract class ParseResult<T>
 ```
 
 
-# Atome unseres Universums
+# ![Atom](../Images/Atom.png)
 
-## `Failure`
+## `Fail`
 
 - schlägt immmer fehl
 
 ```csharp
-Parser<T> Failure<T>()
+Parser<T> Fail<T>()
 {
   return input => new FailureResult<T>();
 }
 ```
 
-## `Success`
+## `Succeed`
 
 - immer erfolgreich
 - gibt *festen*  Wert zurück
@@ -269,7 +269,7 @@ Parser<T> Succeed<T>(T withalue)
 entscheided über ein Prädikat ob das erste Zeichen in der Eingabe erkannt wird
 
 ```csharp
-Parser<char> Char(Func<char, bool> isValidChar)
+Parser<char> Char(Predicate<char> isValidChar)
 {
   return input =>
     input.Length == 0 || !isValidChar(input[0])
@@ -278,21 +278,33 @@ Parser<char> Char(Func<char, bool> isValidChar)
 }
 ```
 
-# einfache Kombinatoren
+# Parser kombinieren
+
+## `or`
+
+![A ok](../Images/OrParserA.png)
+
+## `or`
+
+![A fail, B ok](../Images/OrParserB.png)
+
+## `or`
+
+![beide fail](../Images/OrParserC.png)
 
 ## `or`
 
 ```csharp
-Parser<T> Or<T>(this Parser<T> either, Parser<T> or)
+Parser<T> Or<T>(this Parser<T> parserA, Parser<T> parserB)
 {
   return input =>
     {
-      switch (either(input))
+      switch (parserA(input))
       {
         case SuccessResult<T> success:
           return success;
         default: // Failed
-          return or(input);
+          return parserB(input);
       }
     };
 }
@@ -317,20 +329,23 @@ Parser<IEnumerable<T>> Many<T>(this Parser<T> parser) {
 }}};}
 ```
 
-# Functor *what?*
+# Funktor
+
+## *Erfolg*
+
+![](../Images/ParserFunktorA.png)
+
+## *Fehlschlag*
+
+![](../Images/ParserFunktorB.png)
 
 ---
 
-`Map : (f: A->B) -> (P<A> -> P<B>)`
-
-![`Map(ToString, IntParser)`](../Images/ParserFunctor.png)
-
-
-## `map`
+**C#**
 
 ```csharp
 Parser<TRes> Map<T, TRes>(
-   this Parser<T> parser, 
+   Parser<T> parser, 
    Func<T, TRes> map) 
 {
 
@@ -355,6 +370,8 @@ ParseResult<Tres> Map<Tres>(Func<T, Tres> map)
 
 ---
 
+**kombiniert**
+
 ```csharp
 Parser<TRes> Map<T, TRes>(
    this Parser<T> parser, 
@@ -364,15 +381,39 @@ Parser<TRes> Map<T, TRes>(
 }
 ```
 
-## Funktor Komposition
+---
+
+### Typ
+
+map : (f: A &rarr; B)  &rarr;  (`P<A>`  &rarr;  `P<B>`)
+
+---
+
+### Gesetze
+
+
+- `p.map(x=>x)` &#8801; `p`
+- `p.map(x=>g(f(x)))` &#8801; `p.map(f).map(g)`
+
+---
+
+### Funktor Komposition
 
 ![](../Images/FunctorComp.png)
+
+---
+
+### andere "Funktoren"
+
+- `IEnumerable` / `Select`
+- `Task`
+- ...
 
 # Monad
 
 ## `andThen` 
 
-![`P<A> -> (a -> P<B>) -> P<B>`](../Images/ParserBind.png)
+`P<A>` &rarr; (`a` &rarr; `P<B>`) &rarr; `P<B>`
 
 ## `andThen`
 
@@ -448,23 +489,18 @@ Parser<TResult> SelectMany<TSource, TCollection, TResult>(
 }
 ```
 
+
 # Beispiel *Rechner*
 
 ## die Gramatik
 
 ```
-<expr> ::= <prod> | <prod> ("+"|"-") <expr>
-<prod> ::= <val>  | <val>  ("*"|"/") <prod>
-<val>  ::= zahl   | "(" <expr> ")"
+<expr>   ::= <term>    | <term> ("+"|"-") <expr>
+<term>   ::= <factor>  | <factor>  ("*"|"/") <term>
+<factor> ::= zahl      | "(" <expr> ")"
 
 zahl   = [0|1|..|9]+
 ```
-
-## Beispiel
-
-(2+3) + 5 * 5
-
-TODO: Baum einfügen
 
 ## Leerzeichen ignorieren
 
@@ -520,6 +556,18 @@ expressionRef.SetRef(
    .ChainLeft1(addOpsP));
 ```
 
+# Links
+
+## Referenzen
+
+- G. Hutton, E. Meijer [Monadic Parsing in Haskell](http://www.cs.nott.ac.uk/~pszgmh/pearl.pdf)
+- G. Hutton, E. Meijer [Monadic Parser Combinators](http://www.cs.nott.ac.uk/~pszgmh/monparsing.pdf)
+
+## Bibliotheken
+
+- [Sprache](https://github.com/sprache/Sprache)
+- [FParsec](http://www.quanttec.com/fparsec/)
+- [Liste mit anderen Implementationen](https://wiki.haskell.org/Parsec#Parsec_clones_in_other_languages)
 
 # andere Beispiele
 

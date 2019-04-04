@@ -13,7 +13,7 @@ namespace ParserComb.Combinators
 
     public static (Parser<T> Parser, Action<Parser<T>> SetRef) CreateForwardRef<T>()
     {
-      object boxed = Failure<T>();
+      object boxed = Fail<T>();
       return (input => ((Parser<T>)boxed)(input), p => boxed = p);
     }
 
@@ -22,7 +22,7 @@ namespace ParserComb.Combinators
       return input => ParseResult.Success(withValue, input);
     }
 
-    public static Parser<T> Failure<T>()
+    public static Parser<T> Fail<T>()
     {
       return input => ParseResult.Fail<T>();
     }
@@ -51,7 +51,7 @@ namespace ParserComb.Combinators
             () => ParseResult.Fail<TRes>());
     }
 
-    public static Parser<char> Char(Func<char, bool> isValidChar)
+    public static Parser<char> Char(Predicate<char> isValidChar)
     {
       return input =>
         input.Length == 0 || !isValidChar(input[0])
