@@ -35,7 +35,7 @@ date: 06. April 2018
 
 :::notes
 - kleine Bausteine / Daten
-- Funktionen / Verknüpfugnen geben wieder Bausteine (Kombinatoren)
+- Funktionen / Verknüpfungen geben wieder Bausteine (Kombinatoren)
 - aus Einfachen &rarr; kompliziertes
 
 - Beispiel heute: Parser
@@ -49,11 +49,11 @@ ein **Parser** versucht eine *Eingabe* in eine für die Weiterverarbeitung geeig
 *Ausgabe* umzuwandeln.
 
 :::notes
-- Eingabe = String (Stream von Characteren)
+- Eingabe = String (Stream von Charakteren)
 - Ausgabe ein Wert
 - Werte in FP immutable/typisiert
 - Beispiel: `Int.Parse/TryParse`
-- Kompiler / Syntaxbaum (Demoprojekt: Rechner)
+- Compiler / Syntaxbaum (Demoprojekt: Rechner)
 :::
 
 ---
@@ -63,14 +63,14 @@ ein **Parser** versucht eine *Eingabe* in eine für die Weiterverarbeitung geeig
 ![Syntaxbaum](../Images/SyntaxBaum.png)
 
 :::notes
-- eingabe wird zerlegt in Symbole/Baum
-- interpretiert durch Wertezuweisung
+- Eingabe wird zerlegt in Symbole/Baum
+- interpretiert durch Wertzuweisung
 - Punkt vor Strich durch Struktur
 :::
 
 ## Dazu
 
-- *Parser* als **Daten** representieren
+- *Parser* als **Daten** repräsentieren
 - *Kombinatoren* als **Funktionen** zwischen diesen Daten
 
 :::notes
@@ -101,7 +101,7 @@ delegate ParseResult<T> Parser<T>(string input)
 
 :::notes
 - als einfache Funktion dargestellt
-- `delegate` gibt der Signatur einen Namen / C# Kompiler kommt gut damit klar
+- `delegate` gibt der Signatur einen Namen / C# Compiler kommt gut damit klar
 - weniger Boilerplate `new CharParser(...)`
 - *funktionaler*
 - `ParserResult`?
@@ -118,7 +118,7 @@ eine von zwei Möglichkeiten:
 - auch wieder generisch
 - zwei Fälle / entweder Erfolg oder Misserfolg
 - im Erfolgsfall noch den erkannten Wert und den nicht-erkannten Rest
-- unschön: Nullable über Flags ~> **ungültige Werte unrepresentierbar**
+- unschön: Nullable über Flags ~> **ungültige Werte unrepräsentierbar**
 :::
 
 ## algebraischer Datentyp
@@ -216,7 +216,7 @@ switch (result)
 **Was** machen wir mit den Datentyp?
 
 :::notes
-- Alonzo Church 1930 - grundlagen der Mathematik
+- Alonzo Church 1930 - Grundlagen der Mathematik
 - im Lambda-Calculus hat man nur Funktionen
 - alles muss mit Funktionen ausgedrückt werden
 - nicht *wie sieht aus* sonder *was machen wir mit*
@@ -283,7 +283,7 @@ Zwei (n => n+1, 0);    // = 2
 
 :::notes
 - Was machen natürliche Zahlen
-- Beispiel mit Fingerzählen und Strichen auf Papier geben
+- Beispiel mit Finger zählen und Strichen auf Papier geben
 - Code durchgehen und mit den Beispielen verdeutlichen
 - keine Sorge - muss nicht verstanden werden
 :::
@@ -304,7 +304,7 @@ abstract class ParseResult<T>
 :::notes
 - wir benutzen die Results immer als Entscheidung / `match`
 - wie beim bool / if
-- code erklären
+- Code erklären
 - alle Fälle müssen angegeben werden, keiner wird vergessen
 :::
 
@@ -373,7 +373,7 @@ abstract class ParseResult<T>
 
 ## `Fail`
 
-- schlägt immmer fehl
+- schlägt immer fehl
 
 ```csharp
 Parser<T> Fail<T>()
@@ -410,7 +410,7 @@ Parser<T> Succeed<T>(T withValue)
 
 ## `Char` Parser
 
-entscheided über ein Prädikat ob das erste Zeichen in der Eingabe erkannt wird
+entscheidet über ein Prädikat ob das erste Zeichen in der Eingabe erkannt wird
 
 ```csharp
 Parser<char> Char(Predicate<char> isValidChar)
@@ -505,7 +505,7 @@ Parser<IEnumerable<T>> Many<T>(this Parser<T> parser) {
 - Idee: gib den gleichen Parser wiederholt den Rest der Eingabe und sammle die Ergebnissen
 - schlägt **nie** fehl
 - 
-- Durchatmen - besuch im Elfenbeinturm
+- Durchatmen - Besuch im Elfenbeinturm
 :::
 
 # Funktor
@@ -527,7 +527,7 @@ map : (f: A &rarr; B)  &rarr;  (`F<A>`  &rarr;  `F<B>`)
 
 :::notes
 - hier eine Variante
-- ist Kombinator, der einen Parser und eine Funktino übergeben bekommt
+- ist Kombinator, der einen Parser und eine Funktion übergeben bekommt
 - wenn der Parser erfolgreich ist, wird die Funktion noch auf den Wert angewendet
 :::
 
@@ -536,7 +536,7 @@ map : (f: A &rarr; B)  &rarr;  (`F<A>`  &rarr;  `F<B>`)
 ![](../Images/ParserFunktorB.png)
 
 :::notes
-- schlägt der Parser fehler, ist auch der *gemappte* Parser nicht erfolgreich
+- schlägt der Parser fehl, ist auch der *gemappte* Parser nicht erfolgreich
 :::
 
 ---
@@ -575,7 +575,7 @@ ParseResult<Tres> Map<Tres>(Func<T, Tres> map)
 :::notes
 - das Result ist ebenfalls ein Funktor
 - *viele* generische Typen sind Funktoren
-- *wenn* Argument nur in Positiver-Position - zusammenhang mit co/contra Varianz kurz erklären
+- *wenn* Argument nur in Positiver-Position - Zusammenhang mit Co/contra Varianz kurz erklären
 - damit ...
 :::
 
@@ -605,7 +605,7 @@ Parser<TRes> Map<T, TRes>(
 - `p.map(x=>g(f(x)))` &#8801; `p.map(f).map(g)`
 
 :::notes
-- erwähnen, falld die *Lambda-Polizei* zusieht
+- erwähnen, Falls die *Lambda-Polizei* zusieht
 - ist in C# schwierig zu garantieren - sehen wir einfach darüber weg
 :::
 
@@ -618,8 +618,8 @@ Parser<TRes> Map<T, TRes>(
 - ...
 
 :::notes
-- Funktoren geschaft
-- nächter Halt Monaden!
+- Funktoren geschafft
+- nächster Halt Monaden!
 :::
 
 # Monaden
@@ -698,7 +698,7 @@ Parser<T> ChainLeft1<T>(
 
 :::notes
 - anhand Beispiel davor erklären
-- genere hin/her springen
+- gerne hin/her springen
 - **übrigens:** Performance hier egal
 :::
 
@@ -757,7 +757,7 @@ parse error
 input? 
 ```
 
-## die Gramatik
+## die Grammatik
 
 ```
 <expr>   ::= <term>    | <term> ("+"|"-") <expr>
@@ -798,9 +798,9 @@ var zahlP =
 ```
 
 :::notes
-- `Many1` muss mindenstens einen Wert liefern
+- `Many1` muss mindestens einen Wert liefern
 - `TryMap` geht schief, wenn `TryParse` `false` liefert
-- `LeftOf` Kombinator, der zwei Parser nacheinander benutzt und nur das Ergebnis des ersten zurückgibt
+- `LeftOf` Kombinator, der zwei Parser nacheinander benutzt und nur das Ergebnis des ersten zurück gibt
 :::
 
 ## Operatoren
@@ -820,7 +820,7 @@ var punktOperator = ...
 ```
 
 :::notes
-- Achtung: `OperatorP` liefert einen Parser, der einen Funktionswert zurückgibt
+- Achtung: `OperatorP` liefert einen Parser, der einen Funktionswert zurück gibt
 :::
 
 ## Expression
