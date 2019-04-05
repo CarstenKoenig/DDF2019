@@ -904,5 +904,5 @@ infoDecoder =
 
 ## Vielen Dank
 
-- **Slides/Demo** [github.com/CarstenKoenig](https://github.com/CarstenKoenig)
+- **Slides/Demo** [github.com/CarstenKoenig/DDF2019](https://github.com/CarstenKoenig/DDF2019)
 - **Twitter** @CarstenK_Dev
