@@ -29,7 +29,7 @@ namespace ParserComb
       var spacesP =
         Parsers.Char(Char.IsWhiteSpace).Many().Map(_ => Unit.Value);
 
-      var doubleP =
+      var zahlP =
         Parsers
           .Char(Char.IsDigit)
           .Many1()
@@ -52,14 +52,14 @@ namespace ParserComb
 
       var expressionRef = Parsers.CreateForwardRef<double>();
 
-      var valueP = expressionRef.Parser
+      var factorP = expressionRef.Parser
         .Between(Parsers.Char('(').LeftOf(spacesP), Parsers.Char(')').LeftOf(spacesP))
-        .Or(doubleP);
+        .Or(zahlP);
 
-      var multExprP =
-        valueP.ChainLeft1(multOpsP);
+      var termP =
+        factorP.ChainLeft1(multOpsP);
 
-      expressionRef.SetRef(multExprP.ChainLeft1(addOpsP).RightOf(spacesP));
+      expressionRef.SetRef(termP.ChainLeft1(addOpsP).RightOf(spacesP));
       return expressionRef.Parser;
     }
 
